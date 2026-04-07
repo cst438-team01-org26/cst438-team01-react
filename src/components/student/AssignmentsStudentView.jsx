@@ -9,6 +9,8 @@ const AssignmentsStudentView = () => {
   const [assignments, setAssignments] = useState([]);
 
   const fetchData = async ({ year, semester }) => {
+    setAssignments([]); // Clear previous results
+    setMessage('');
     try {
       const response = await fetch(`${GRADEBOOK_URL}/assignments?year=${year}&semester=${semester}`,
         {
@@ -21,28 +23,52 @@ const AssignmentsStudentView = () => {
       );
       if (response.ok) {
         const data = await response.json();
-        setAssignments(data);
+        if (data.length === 0) {
+          setMessage("No assignments found for this term.");
+        } else {
+          setAssignments(data);
+        }
       } else {
         const rc = await response.json();
-        setMessage(rc);
+        setMessage("Error: " + rc.message);
       }
     } catch (err) {
-      setMessage(err);
+      setMessage("Network error: " + err.message);
     }
   }
 
-  const headers = ['Course', 'Title', 'DueDate', 'Score'];
+  const headers = ['Course', 'Assignment Name', 'Due Date', 'Score'];
 
   return (
     <>
-      <h3>Assignments</h3>
-      <Messages response={message} />
+      <div className="App">
+        <h3>Assignments</h3>
+        <Messages response={message} />
 
-      <SelectTerm buttonText="Get Assignments" onClick={fetchData} />
+        <SelectTerm buttonText="Get Assignments" onClick={fetchData} />
 
-      <p>To be implemented.  Display table with columns as given in headers.
-        Display assignment data.
-      </p>
+        {assignments.length > 0 && (
+          <table className="Center">
+            <thead>
+              <tr>
+                {headers.map((h, i) => (
+                  <th key={i}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {assignments.map((a) => (
+                <tr key={a.id}>
+                  <td>{a.courseId}</td>
+                  <td>{a.assignmentName}</td>
+                  <td>{a.dueDate}</td>
+                  <td>{a.score !== null ? a.score : 'Not Graded'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </>
   );
 }
