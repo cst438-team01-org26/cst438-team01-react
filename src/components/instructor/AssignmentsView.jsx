@@ -46,23 +46,77 @@ const AssignmentsView = () => {
     fetchAssignments()
   }, []);
 
+  const deleteAssignment = async (id) => {
+    try {
+      const response = await fetch(`${GRADEBOOK_URL}/assignments/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': sessionStorage.getItem("jwt"),
+        },
+      });
+
+      if (response.ok) {
+        fetchAssignments();
+      } else {
+        const body = await response.json();
+        setMessage(body);
+      }
+    } catch (err) {
+      setMessage(err.message);
+    }
+  }
+
+  const onDelete = (id) => {
+    confirmAlert({
+      title: 'Confirm to delete',
+      message: 'Do you really want to delete?',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: () => deleteAssignment(id),
+        },
+        {
+          label: 'No',
+        },
+      ],
+    });
+  }
+
+
 
 
 
   const headers = ['id', 'Title', 'Due Date', '', '', ''];
 
   return (
-    <div>
-      <Messages response={message} />
+      <div>
+        <h3>Assignments for {courseId} {secId}</h3>
+        <Messages response={message} />
 
-      <p>To be implemented. Display a table. Column headings are as givin in headers.
-        For each row, show the id, title, due date of the assignment
-        along with buttons to edit and delete the assignment </p>
+        <table className="Center">
+          <thead>
+          <tr>
+            {headers.map((h, idx) => (
+                <th key={idx}>{h}</th>
+            ))}
+          </tr>
+          </thead>
+          <tbody>
+          {assignments.map((a) => (
+              <tr key={a.id}>
+                <td>{a.id}</td>
+                <td>{a.title}</td>
+                <td>{a.dueDate}</td>
+                <td><AssignmentUpdate editAssignment={a} onClose={fetchAssignments} /></td>
+                <td><AssignmentGrade assignment={a} /></td>
+                <td><button onClick={() => onDelete(a.id)}>Delete</button></td>
+              </tr>
+          ))}
+          </tbody>
+        </table>
 
-
-
-      <AssignmentAdd secNo={secNo} onClose={fetchAssignments} />
-    </div>
+        <AssignmentAdd secNo={secNo} onClose={fetchAssignments} />
+      </div>
   );
 }
 
