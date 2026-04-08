@@ -17,7 +17,7 @@ const EnrollmentsView = () => {
 
     try {
       const response = await fetch(
-          `${GRADEBOOK_URL}/enrollments`,
+          `${GRADEBOOK_URL}/sections/${secNo}/enrollments`,
           {
             method: 'GET',
             headers: {
@@ -57,7 +57,7 @@ const EnrollmentsView = () => {
     setMessage('');
     try {
       const response = await fetch(
-          `${GRADEBOOK_URL}/sections/${secNo}/enrollments`,
+          `${GRADEBOOK_URL}/enrollments`,
           {
             method: 'PUT',
             headers: {
