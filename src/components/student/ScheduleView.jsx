@@ -8,7 +8,7 @@ import Messages from '../Messages';
 const ScheduleView = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [message, setMessage] = useState('');
-  const [term, setTerm] = useState({});
+  const [term, setTerm] = useState({ year: '', semester: '' });
 
   const prefetchEnrollments = ({ year, semester }) => {
     setTerm({ year, semester });
@@ -68,6 +68,8 @@ const ScheduleView = () => {
     }
   }
 
+  const headers = ['Enrollment ID', 'Sec No', 'Course ID', 'Building', 'Room', 'Times', 'Action'];
+
   return (
     <div>
       <Messages response={message} />
@@ -75,13 +77,7 @@ const ScheduleView = () => {
       <table className="Center">
         <thead>
           <tr>
-            <th>Enrollment ID</th>
-            <th>Sec No</th>
-            <th>Course ID</th>
-            <th>Building</th>
-            <th>Room</th>
-            <th>Times</th>
-            <th>Action</th>
+            {headers.map((h, i) => <th key={i}>{h}</th>)}
           </tr>
         </thead>
         <tbody>
