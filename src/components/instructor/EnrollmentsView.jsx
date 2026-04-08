@@ -17,7 +17,7 @@ const EnrollmentsView = () => {
 
     try {
       const response = await fetch(
-          `${GRADEBOOK_URL}/sections/${secNo}/enrollments`,
+          `${GRADEBOOK_URL}/enrollments`,
           {
             method: 'GET',
             headers: {
