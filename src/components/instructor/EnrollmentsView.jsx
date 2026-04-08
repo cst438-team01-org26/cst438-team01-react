@@ -29,7 +29,6 @@ const EnrollmentsView = () => {
 
       if (response.ok) {
         const data = await response.json();
-
         if (data.length === 0) {
           setMessage('No enrollments found for this section.');
         } else {
@@ -56,10 +55,9 @@ const EnrollmentsView = () => {
 
   const saveData = async () => {
     setMessage('');
-
     try {
       const response = await fetch(
-          `${GRADEBOOK_URL}/enrollments`,
+          `${GRADEBOOK_URL}/sections/${secNo}/enrollments`,
           {
             method: 'PUT',
             headers: {
@@ -121,7 +119,7 @@ const EnrollmentsView = () => {
           )}
 
           <br />
-          <button onClick={saveData}>Save All Grades</button>
+          <button onClick={saveData} disabled={enrollments.length === 0}>Save All Grades</button>
         </div>
       </>
   );

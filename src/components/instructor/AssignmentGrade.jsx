@@ -26,7 +26,6 @@ const AssignmentGrade = ({ assignment }) => {
 
       if (response.ok) {
         const data = await response.json();
-
         if (data.length === 0) {
           setMessage('No grades found for this assignment.');
         } else {
@@ -58,7 +57,6 @@ const AssignmentGrade = ({ assignment }) => {
 
   const saveData = async () => {
     setMessage('');
-
     try {
       const response = await fetch(
           `${GRADEBOOK_URL}/grades`,
@@ -125,7 +123,7 @@ const AssignmentGrade = ({ assignment }) => {
           )}
 
           <br />
-          <button onClick={saveData}>Save</button>
+          <button onClick={saveData} disabled={grades.length === 0}>Save</button>
           <button onClick={editClose}>Close</button>
         </dialog>
       </>
