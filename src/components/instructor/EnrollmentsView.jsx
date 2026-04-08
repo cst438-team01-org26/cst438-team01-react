@@ -59,7 +59,7 @@ const EnrollmentsView = () => {
 
     try {
       const response = await fetch(
-          `${GRADEBOOK_URL}/sections/${secNo}/enrollments`,
+          `${GRADEBOOK_URL}/enrollments`,
           {
             method: 'PUT',
             headers: {
@@ -88,7 +88,7 @@ const EnrollmentsView = () => {
         <div className="App">
           <h3>{courseId}-{secId} Enrollments</h3>
 
-          <Messages message={message} />
+          <Messages response={message} />
 
           {enrollments.length > 0 && (
               <table className="Center">

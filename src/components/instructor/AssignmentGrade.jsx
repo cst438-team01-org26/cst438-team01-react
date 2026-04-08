@@ -33,8 +33,8 @@ const AssignmentGrade = ({ assignment }) => {
           setGrades(data);
         }
       } else {
-        const rc = await response.json();
-        setMessage('Error: ' + rc.message);
+        const rc = await response.text();
+        setMessage('Error: ' + rc);
       }
     } catch (err) {
       setMessage('Network error: ' + err.message);
@@ -61,7 +61,7 @@ const AssignmentGrade = ({ assignment }) => {
 
     try {
       const response = await fetch(
-          `${GRADEBOOK_URL}/assignments/${assignment.id}/grades`,
+          `${GRADEBOOK_URL}/grades`,
           {
             method: 'PUT',
             headers: {
@@ -92,7 +92,7 @@ const AssignmentGrade = ({ assignment }) => {
         <dialog ref={dialogRef}>
           <h3>Assignment Grades</h3>
 
-          <Messages message={message} />
+          <Messages response={message} />
 
           {grades.length > 0 && (
               <table className="Center">
