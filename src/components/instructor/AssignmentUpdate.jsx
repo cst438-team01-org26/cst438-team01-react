@@ -15,22 +15,65 @@ const AssignmentUpdate = ({ editAssignment, onClose }) => {
   const editOpen = () => {
     setMessage('');
     setAssignment(editAssignment);
-    // to be implemented.  invoke showModal() method on the dialog element.
-    // dialogRef.current.showModal();
+    dialogRef.current.showModal();
+  };
+  const onChange = (e) => {
+    setAssignment({ ...assignment, [e.target.name]: e.target.value });
+  };
+
+  const saveAssignment = async () => {
+    try {
+      const response = await fetch(`${GRADEBOOK_URL}/assignments`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': sessionStorage.getItem('jwt'),
+        },
+        body: JSON.stringify(assignment),
+      });
+
+      if (response.ok) {
+        dialogRef.current.close();
+        onClose();
+      } else {
+        const rc = await response.json();
+        setMessage(rc);
+      }
+    } catch (err) {
+      setMessage(err.message);
+    }
   };
 
 
 
   return (
-    <>
-      <button onClick={editOpen}>Edit</button>
-      <dialog ref={dialogRef} >
-        <p>To be implemented.  Show the id, title and due date of the assignemnt.
-          Allow user to edit the title and due date.
-          Buttons for Close and Save.
-        </p>
-      </dialog>
-    </>
+      <>
+        <button onClick={editOpen}>Edit</button>
+
+        <dialog ref={dialogRef}>
+          <h2>Edit Assignment</h2>
+          <Messages response={message} />
+
+          <p>ID: {assignment.id}</p>
+
+          <input
+              type="text"
+              name="title"
+              value={assignment.title || ''}
+              onChange={onChange}
+          />
+
+          <input
+              type="date"
+              name="dueDate"
+              value={assignment.dueDate || ''}
+              onChange={onChange}
+          />
+
+          <button onClick={() => dialogRef.current.close()}>Close</button>
+          <button onClick={saveAssignment}>Save</button>
+        </dialog>
+      </>
   )
 }
 
