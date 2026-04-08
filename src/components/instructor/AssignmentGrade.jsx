@@ -8,55 +8,127 @@ const AssignmentGrade = ({ assignment }) => {
   const [grades, setGrades] = useState([]);
   const dialogRef = useRef();
 
+  const fetchData = async () => {
+    setGrades([]);
+    setMessage('');
+
+    try {
+      const response = await fetch(
+          `${GRADEBOOK_URL}/assignments/${assignment.id}/grades`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': sessionStorage.getItem('jwt'),
+            },
+          }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.length === 0) {
+          setMessage('No grades found for this assignment.');
+        } else {
+          setGrades(data);
+        }
+      } else {
+        const rc = await response.text();
+        setMessage('Error: ' + rc);
+      }
+    } catch (err) {
+      setMessage('Network error: ' + err.message);
+    }
+  };
 
   const editOpen = () => {
-    setMessage('');
-    setGrades([]);
-    fetchGrades(assignment.id);
-    // to be implemented.  invoke showModal() method on the dialog element.
-    // dialogRef.current.showModal();
+    fetchData();
+    dialogRef.current.showModal();
   };
 
   const editClose = () => {
     dialogRef.current.close();
   };
 
-  const fetchGrades = async (assignmentId) => {
+  const updateScore = (index, value) => {
+    const updated = [...grades];
+    updated[index].score = value === '' ? null : Number(value);
+    setGrades(updated);
+  };
+
+  const saveData = async () => {
+    setMessage('');
+
     try {
-      const response = await fetch(`${GRADEBOOK_URL}/assignments/${assignmentId}/grades`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': sessionStorage.getItem('jwt'),
-          },
-        }
+      const response = await fetch(
+          `${GRADEBOOK_URL}/grades`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': sessionStorage.getItem('jwt'),
+            },
+            body: JSON.stringify(grades),
+          }
       );
-      const data = await response.json();
+
       if (response.ok) {
-        setGrades(data);
+        setMessage('Grades saved successfully.');
       } else {
-        setMessage(data);
+        const rc = await response.text();
+        setMessage('Error: ' + rc);
       }
     } catch (err) {
-      setMessage(err);
+      setMessage('Network error: ' + err.message);
     }
-  }
-
-
+  };
 
   const headers = ['gradeId', 'student name', 'student email', 'score'];
 
   return (
-    <>
-      <button id="gradeButton" onClick={editOpen}>Grade</button>
-      <dialog ref={dialogRef}>
-        <p>To be implemented.  Display table with columns headings as given in headers.
-          For each student, display and allow the user to edit the student's score.
-          Buttons for Close and Save.
-        </p>
+      <>
+        <button id="gradeButton" onClick={editOpen}>Grade</button>
 
-      </dialog>
-    </>
+        <dialog ref={dialogRef}>
+          <h3>Assignment Grades</h3>
+
+          <Messages response={message} />
+
+          {grades.length > 0 && (
+              <table className="Center">
+                <thead>
+                <tr>
+                  {headers.map((h, i) => (
+                      <th key={i}>{h}</th>
+                  ))}
+                </tr>
+                </thead>
+                <tbody>
+                {grades.map((g, index) => (
+                    <tr key={g.gradeId}>
+                      <td>{g.gradeId}</td>
+                      <td>{g.studentName}</td>
+                      <td>{g.studentEmail}</td>
+                      <td>
+                        <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={g.score ?? ''}
+                            onChange={(e) => updateScore(index, e.target.value)}
+                        />
+                      </td>
+                    </tr>
+                ))}
+                </tbody>
+              </table>
+          )}
+
+          <br />
+          <button onClick={saveData}>Save</button>
+          <button onClick={editClose}>Close</button>
+        </dialog>
+      </>
   );
 }
 
