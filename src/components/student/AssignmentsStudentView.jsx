@@ -60,7 +60,7 @@ const AssignmentsStudentView = () => {
               {assignments.map((a) => (
                 <tr key={a.id}>
                   <td>{a.courseId}</td>
-                  <td>{a.assignmentName}</td>
+                  <td>{a.title}</td>
                   <td>{a.dueDate}</td>
                   <td>{a.score !== null ? a.score : 'Not Graded'}</td>
                 </tr>

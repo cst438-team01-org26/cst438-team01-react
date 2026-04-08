@@ -84,7 +84,7 @@ const ScheduleView = () => {
           {enrollments.map((e) => (
             <tr key={e.enrollmentId}>
               <td>{e.enrollmentId}</td>
-              <td>{e.secNo}</td>
+              <td>{e.sectionNo}</td>
               <td>{e.courseId}</td>
               <td>{e.building}</td>
               <td>{e.room}</td>
